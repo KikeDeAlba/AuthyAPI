@@ -50,8 +50,6 @@ authRouter.post(
     async (req, res) => {
         const { email, password, businessCode } = UserSchema.parse(req.body);
 
-        console.log(req.body);
-
         try {
             const { password: hashedPassword, payload } = await getUser(email, businessCode);
             console.log(hashedPassword, payload);
