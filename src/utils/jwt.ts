@@ -1,14 +1,13 @@
 import { JWT_SECRET } from "@/config";
 import jwt from "jsonwebtoken";
 
-export const createAccountToken = (email: string, payload?: string) => {
+export const createAccountToken = (email: string, payload: object) => {
     const secret = JWT_SECRET ?? '';
-    const jsonPayload = JSON.parse(payload ?? '{}');
-    const token = jwt.sign({ email, payload: jsonPayload }, secret, {
-        expiresIn: '1h'
+    const token = jwt.sign({ email, payload }, secret, {
+        expiresIn: '5h'
     });
 
-    const refreshToken = jwt.sign({ email, payload: jsonPayload, refresh: true }, secret, {
+    const refreshToken = jwt.sign({ email, payload, refresh: true }, secret, {
         expiresIn: '10d'
     });
 
@@ -36,7 +35,7 @@ export const refreshAccountToken = (refreshToken: string) => {
     if (!decoded.refresh) throw new Error('Invalid refresh token');
 
     const token = jwt.sign({ email: decoded.email, payload: decoded.payload }, secret, {
-        expiresIn: '1h'
+        expiresIn: '5h'
     })
 
     const newRefreshToken = jwt.sign({ email: decoded.email, payload: decoded.payload, refresh: true }, secret, {
