@@ -17,7 +17,7 @@ authRouter.post(
     "/register",
     zodValidator("body", UnregisterUserSchema),
     async (req, res) => {
-        const { email, password, payload, bussinessCode } = UnregisterUserSchema.parse(req.body);
+        const { email, password, payload, businessCode } = UnregisterUserSchema.parse(req.body);
 
         // CREATE hashpassword
         const hashedPassword = await hashPassword(password);
@@ -27,7 +27,7 @@ authRouter.post(
 
         try {
             // SAVE user
-            await saveUser(email, hashedPassword, payload, bussinessCode);
+            await saveUser(email, hashedPassword, payload, businessCode);
         } catch (error) {
             console.log(error);
 
@@ -48,10 +48,13 @@ authRouter.post(
     "/login",
     zodValidator("body", UserSchema),
     async (req, res) => {
-        const { email, password, bussinessCode } = UserSchema.parse(req.body);
+        const { email, password, businessCode } = UserSchema.parse(req.body);
+
+        console.log(req.body);
 
         try {
-            const { password: hashedPassword, payload } = await getUser(email, bussinessCode);
+            const { password: hashedPassword, payload } = await getUser(email, businessCode);
+            console.log(hashedPassword, payload);
 
             const isValid = await comparePassword(password, hashedPassword);
 
