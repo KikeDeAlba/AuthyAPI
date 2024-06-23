@@ -52,7 +52,6 @@ authRouter.post(
 
         try {
             const { password: hashedPassword, payload } = await getUser(email, businessCode);
-            console.log(hashedPassword, payload);
 
             const isValid = await comparePassword(password, hashedPassword);
 
