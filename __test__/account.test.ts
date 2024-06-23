@@ -6,7 +6,8 @@ describe('Account', () => {
         password: '12345678',
         payload: {
             test: 'test'
-        }
+        },
+        bussinessCode: '12345678'
     }
     let token = ''
     let refreshToken = ''
