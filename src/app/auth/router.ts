@@ -17,7 +17,7 @@ authRouter.post(
     "/register",
     zodValidator("body", UnregisterUserSchema),
     async (req, res) => {
-        const { email, password, payload } = UnregisterUserSchema.parse(req.body);
+        const { email, password, payload, bussinessCode } = UnregisterUserSchema.parse(req.body);
 
         // CREATE hashpassword
         const hashedPassword = await hashPassword(password);
@@ -27,7 +27,7 @@ authRouter.post(
 
         try {
             // SAVE user
-            await saveUser(email, hashedPassword, payload);
+            await saveUser(email, hashedPassword, payload, bussinessCode);
         } catch (error) {
             console.log(error);
 
@@ -48,23 +48,31 @@ authRouter.post(
     "/login",
     zodValidator("body", UserSchema),
     async (req, res) => {
-        const { email, password } = UserSchema.parse(req.body);
-        const { password: hashedPassword, payload } = await getUser(email);
+        const { email, password, bussinessCode } = UserSchema.parse(req.body);
 
-        const isValid = await comparePassword(password, hashedPassword);
+        try {
+            const { password: hashedPassword, payload } = await getUser(email, bussinessCode);
 
-        if (!isValid) {
-            return res.status(401).json({
-                message: "Invalid email or password",
+            const isValid = await comparePassword(password, hashedPassword);
+
+            if (!isValid) {
+                return res.status(401).json({
+                    message: "Invalid email or password",
+                });
+            }
+
+            const { refreshToken, token } = createAccountToken(email, payload);
+
+            return res.status(200).json({
+                token,
+                refreshToken,
             });
         }
-
-        const { refreshToken, token } = createAccountToken(email, payload);
-
-        return res.status(200).json({
-            token,
-            refreshToken,
-        });
+        catch (error) {
+            return res.status(401).json({
+                message: 'Invalid user or bussiness code',
+            })
+        }
     },
 );
 

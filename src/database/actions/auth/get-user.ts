@@ -17,10 +17,12 @@ import { turso } from "@/database/client"
 //   }
 
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function formatUserData(data: { columns: any; rows: any; }) {
     const { columns, rows } = data;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     return rows.map((row: { [x: string]: any; }) => {
-        let user = {};
+        const user = {};
         columns.forEach((col: string | number, index: string | number) => {
             // @ts-expect-error - this is a hack to get around the fact that the types are wrong
             user[col] = row[index];
@@ -29,10 +31,10 @@ function formatUserData(data: { columns: any; rows: any; }) {
     });
 }
 
-export const getUser = async (email: string) => {
+export const getUser = async (email: string, bussinessCode: string) => {
     const users = await turso.execute({
-        sql: 'SELECT * FROM users WHERE email = ?',
-        args: [email]
+        sql: 'SELECT * FROM users WHERE email = ? AND bussiness_code = ?',
+        args: [email, bussinessCode]
     })
 
     const formattedUsers = formatUserData(users);
