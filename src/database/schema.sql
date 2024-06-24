@@ -12,7 +12,8 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     payload TEXT,
     business_code TEXT NOT NULL,
-    FOREIGN KEY (business_code) REFERENCES business_codes (business_code) ON DELETE CASCADE
+    FOREIGN KEY (business_code) REFERENCES business_codes (business_code) ON DELETE CASCADE,
+    UNIQUE (email, business_code)
 );
 
 
