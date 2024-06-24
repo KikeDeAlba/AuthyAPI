@@ -9,5 +9,7 @@ export const getUser = async (email: string, businessCode: string) => {
 
     const formattedUsers = formatResultData(users);
 
+    if (formattedUsers.length === 0) throw new Error('User not found');
+
     return formattedUsers[0]
 }
