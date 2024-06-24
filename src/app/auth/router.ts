@@ -61,7 +61,7 @@ authRouter.post(
                 });
             }
 
-            const { refreshToken, token } = createAccountToken(email, payload);
+            const { refreshToken, token } = createAccountToken(email, JSON.parse(payload));
 
             return res.status(200).json({
                 token,
