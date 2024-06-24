@@ -6,11 +6,21 @@ describe('Account', () => {
         password: '12345678',
         payload: {
             test: 'test'
-        },
-        businessCode: '12345678'
+        }
     }
     let token = ''
     let refreshToken = ''
+    let businessCode = ''
+
+    it('should create a new business', async () => {
+        const res = await fetch('http://localhost:3000/business/register')
+
+        const data = await res.json();
+        console.log(data);
+        businessCode = data.businessCode;
+
+        expect(res.status).toBe(200);
+    })
 
     it('should create a new account', async () => {
         const res = await fetch('http://localhost:3000/auth/register', {
@@ -18,7 +28,7 @@ describe('Account', () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify({ ...user, businessCode })
         })
 
         const data = await res.json();
@@ -72,7 +82,7 @@ describe('Account', () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify({ ...user, businessCode })
         })
 
         const data = await res.json();
