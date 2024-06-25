@@ -40,11 +40,13 @@ export const refreshAccountToken = async (refreshToken: string, payload?: object
 
     await updatePayload(decoded.email, newPayload, decoded.businessCode)
 
-    const token = jwt.sign({ email: decoded.email, payload: newPayload, businessCode: decoded.businessCode }, secret, {
+    const objectToSign = { email: decoded.email, payload: newPayload, businessCode: decoded.businessCode }
+
+    const token = jwt.sign(objectToSign, secret, {
         expiresIn: '5h'
     })
 
-    const newRefreshToken = jwt.sign({ email: decoded.email, payload: newPayload, refresh: true, businessCode: decoded.businessCode }, secret, {
+    const newRefreshToken = jwt.sign({ ...objectToSign, refresh: true }, secret, {
         expiresIn: '10d'
     });
 
