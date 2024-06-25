@@ -6,7 +6,7 @@ export const refreshController = async (req: Request, res: Response) => {
 
     try {
         const { token, refreshToken: newRefreshToken } =
-            refreshAccountToken(refreshToken, payload);
+            await refreshAccountToken(refreshToken, payload);
 
         return res.status(200).json({
             token,

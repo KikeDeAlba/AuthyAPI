@@ -24,6 +24,7 @@ export const loginController = async (req: Request, res: Response) => {
         const { refreshToken, token } = createAccountToken(
             email,
             JSON.parse(payload),
+            businessCode
         );
 
         return res.status(200).json({

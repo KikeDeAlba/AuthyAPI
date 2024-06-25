@@ -1,13 +1,14 @@
 import { JWT_SECRET } from "@/config";
+import { updatePayload } from "@/database/actions/auth/update-payload";
 import jwt from "jsonwebtoken";
 
-export const createAccountToken = (email: string, payload: object) => {
+export const createAccountToken = (email: string, payload: object, businessCode: string) => {
     const secret = JWT_SECRET ?? '';
-    const token = jwt.sign({ email, payload }, secret, {
+    const token = jwt.sign({ email, payload, businessCode }, secret, {
         expiresIn: '5h'
     });
 
-    const refreshToken = jwt.sign({ email, payload, refresh: true }, secret, {
+    const refreshToken = jwt.sign({ email, payload, refresh: true, businessCode }, secret, {
         expiresIn: '10d'
     });
 
@@ -22,25 +23,28 @@ export const decodeAccountToken = (token: string) => {
     return jwt.verify(token, JWT_SECRET ?? '')
 }
 
-export const refreshAccountToken = (refreshToken: string, payload?: object) => {
+export const refreshAccountToken = async (refreshToken: string, payload?: object) => {
     const secret = JWT_SECRET ?? '';
 
     const decoded = jwt.verify(refreshToken, secret) as {
         email: string,
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        payload: any,
-        refresh?: boolean
+        payload: { [x: string]: any },
+        refresh?: boolean,
+        businessCode: string
     };
 
     if (!decoded.refresh) throw new Error('Invalid refresh token');
 
     const newPayload = payload ?? decoded.payload;
 
-    const token = jwt.sign({ email: decoded.email, payload: newPayload }, secret, {
+    await updatePayload(decoded.email, newPayload, decoded.businessCode)
+
+    const token = jwt.sign({ email: decoded.email, payload: newPayload, businessCode: decoded.businessCode }, secret, {
         expiresIn: '5h'
     })
 
-    const newRefreshToken = jwt.sign({ email: decoded.email, payload: newPayload, refresh: true }, secret, {
+    const newRefreshToken = jwt.sign({ email: decoded.email, payload: newPayload, refresh: true, businessCode: decoded.businessCode }, secret, {
         expiresIn: '10d'
     });
 
