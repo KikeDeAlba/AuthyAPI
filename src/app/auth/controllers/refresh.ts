@@ -2,11 +2,11 @@ import { refreshAccountToken } from "@/utils/jwt";
 import type { Request, Response } from "express";
 
 export const refreshController = async (req: Request, res: Response) => {
-    const { refreshToken } = req.body;
+    const { refreshToken, payload } = req.body;
 
     try {
         const { token, refreshToken: newRefreshToken } =
-            refreshAccountToken(refreshToken);
+            refreshAccountToken(refreshToken, payload);
 
         return res.status(200).json({
             token,

@@ -22,7 +22,7 @@ export const decodeAccountToken = (token: string) => {
     return jwt.verify(token, JWT_SECRET ?? '')
 }
 
-export const refreshAccountToken = (refreshToken: string) => {
+export const refreshAccountToken = (refreshToken: string, payload?: object) => {
     const secret = JWT_SECRET ?? '';
 
     const decoded = jwt.verify(refreshToken, secret) as {
@@ -34,11 +34,13 @@ export const refreshAccountToken = (refreshToken: string) => {
 
     if (!decoded.refresh) throw new Error('Invalid refresh token');
 
-    const token = jwt.sign({ email: decoded.email, payload: decoded.payload }, secret, {
+    const newPayload = payload ?? decoded.payload;
+
+    const token = jwt.sign({ email: decoded.email, payload: newPayload }, secret, {
         expiresIn: '5h'
     })
 
-    const newRefreshToken = jwt.sign({ email: decoded.email, payload: decoded.payload, refresh: true }, secret, {
+    const newRefreshToken = jwt.sign({ email: decoded.email, payload: newPayload, refresh: true }, secret, {
         expiresIn: '10d'
     });
 
